@@ -147,25 +147,40 @@ def dollar(pen, m: Metrics) -> None:
 
 
 def ampersand(pen, m: Metrics) -> None:
+    # Upper loop + an OPEN lower bowl (which kills the figure-8 read) + a crossing
+    # diagonal that links the loop to the bowl and continues as the tail flicking
+    # out of the bowl's right mouth.
     cap = m.cap_height
-    rt = cap * 0.19                                       # upper loop
-    rb = cap * 0.27                                       # lower bowl
-    cxt = rt + cap * 0.06
-    ring(pen, m, cxt, cap - rt, rt)                      # upper loop
-    ring(pen, m, rb, rb, rb)                             # lower bowl
-    # diagonal tail from the upper loop down through to the lower-right, like an &.
-    diag(pen, m, (cxt, cap - 2 * rt), (cap * 0.60, cap * 0.10))
+    rt = cap * 0.16                                       # upper loop
+    rb = cap * 0.25                                       # lower bowl
+    cxt = rt + cap * 0.05
+    cyt = cap - rt
+    cxb = cyb = rb
+    ring(pen, m, cxt, cyt, rt)                            # upper loop
+    carc(pen, m, cxb, cyb, rb, 25, 330, cap0=True, cap1=True)  # bowl, mouth on the right
+    # tail from the bowl's lower-right lip out toward the baseline-right
+    t0 = arc_pt(cxb, cyb, rb, 330)
+    diag(pen, m, t0, (cap * 0.64, cap * 0.04))
+    joint(pen, m, *t0)
+    # crossing diagonal: upper-loop foot down to the bowl's upper-right lip
+    p0 = (cxt + rt * 0.2, cyt - rt)
+    diag(pen, m, p0, arc_pt(cxb, cyb, rb, 25))
+    joint(pen, m, *p0)
 
 
 def at(pen, m: Metrics) -> None:
+    # Outer ring open at the lower-right with a tail curling out, wrapping a small
+    # lowercase 'a' (bowl ring + right stem) with a clearly open counter.
     cap = m.cap_height
     cx = cy = cap * 0.5
-    R = cap * 0.46                                        # outer ring radius
-    # outer ring left open at the lower-right (an arc, not a full ring).
-    arc(pen, m, cx, cy, R, 300, -40)
-    ring(pen, m, cx, cy, cap * 0.15)                      # inner 'a' bowl
-    # the inner bowl's right wall continues down as a short stem (the 'a' of @).
-    vstem(pen, m, cx + cap * 0.15 - m.half_stroke, cy - cap * 0.15, cy + cap * 0.15)
+    R = cap * 0.45                                        # outer ring centreline radius
+    carc(pen, m, cx, cy, R, -25, 250)                    # outer ring, open lower-right
+    t0 = arc_pt(cx, cy, R, -25)
+    diag(pen, m, t0, (cx + R * 1.05, cy - R * 0.1))      # tail flicking out
+    rb = cap * 0.17                                       # inner 'a' bowl
+    bx = cx - cap * 0.02
+    ring(pen, m, bx, cy, rb)
+    vstem(pen, m, bx + rb - m.half_stroke, cy - rb, cy + rb)  # 'a' stem
 
 
 PUNCTUATION: list[GlyphDef] = [
