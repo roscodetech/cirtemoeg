@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GeomPerfect — specimen</title>
+<title>Cirtemoeg — specimen</title>
 <style>
   @font-face {
-    font-family: "GeomPerfect Sans";
-    src: url("GeomPerfect-Sans.otf") format("opentype");
+    font-family: "Cirtemoeg Sans";
+    src: url("Cirtemoeg-Sans.otf") format("opentype");
   }
   @font-face {
-    font-family: "GeomPerfect Mono";
-    src: url("GeomPerfect-Mono.otf") format("opentype");
+    font-family: "Cirtemoeg Mono";
+    src: url("Cirtemoeg-Mono.otf") format("opentype");
   }
   :root { --ink:#111; --bg:#fafafa; --line:#e3e3e3; --accent:#3a86ff; }
   * { box-sizing: border-box; }
   body {
     margin: 0; background: var(--bg); color: var(--ink);
-    font-family: "GeomPerfect Sans", system-ui, sans-serif;
+    font-family: "Cirtemoeg Sans", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
   .ui { font-family: system-ui, sans-serif; }
@@ -25,7 +25,7 @@
     padding: 48px 6vw 28px; border-bottom: 1px solid var(--line);
     display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px 28px;
   }
-  header h1 { font-size: 64px; margin: 0; font-family: "GeomPerfect Sans"; letter-spacing: .01em; }
+  header h1 { font-size: 64px; margin: 0; font-family: "Cirtemoeg Sans"; letter-spacing: .01em; }
   header .sub { font-family: system-ui, sans-serif; color:#666; font-size:14px; }
   .controls { margin-left:auto; display:flex; gap:18px; align-items:center; }
   .controls label { font-family: system-ui, sans-serif; font-size:13px; color:#444; display:flex; gap:8px; align-items:center; }
@@ -38,7 +38,7 @@
   .r3 { font-size: 56px; }
   .punct { font-size: 44px; }
   .pangram { font-size: 40px; line-height: 1.35; max-width: 22ch; }
-  .mono { font-family: "GeomPerfect Mono"; }
+  .mono { font-family: "Cirtemoeg Mono"; }
   .sizes p { margin: 0 0 10px; }
   .waterfall p { margin: 2px 0; line-height: 1.1; }
   .compare { display:grid; grid-template-columns: 1fr 1fr; gap: 0; }
@@ -46,7 +46,7 @@
   .compare > div:first-child { border-right: 1px solid var(--line); }
   .compare .big { font-size: 90px; line-height: 1; }
   textarea {
-    width: 100%; min-height: 120px; font-family: "GeomPerfect Sans";
+    width: 100%; min-height: 120px; font-family: "Cirtemoeg Sans";
     font-size: 40px; border: 1px solid var(--line); border-radius: 10px;
     padding: 18px 20px; background: #fff; color: var(--ink); resize: vertical;
   }
@@ -57,13 +57,13 @@
 </head>
 <body>
 <header>
-  <h1 id="titleSpecimen">GeomPerfect</h1>
+  <h1 id="titleSpecimen">Cirtemoeg</h1>
   <span class="sub">parametric geometric font · strict purity · x-height = cap/2 · true-circle o</span>
   <div class="controls ui">
     <label>Family
       <select id="family">
-        <option value="GeomPerfect Sans">Sans (proportional)</option>
-        <option value="GeomPerfect Mono">Mono (fixed-width)</option>
+        <option value="Cirtemoeg Sans">Sans (proportional)</option>
+        <option value="Cirtemoeg Mono">Mono (fixed-width)</option>
       </select>
     </label>
     <label>Size <input id="size" type="range" min="18" max="160" value="56"><span id="sizeVal">56</span>px</label>
@@ -76,7 +76,7 @@
 </section>
 
 <section id="charset">
-  <p class="label">Character set · 75 glyphs</p>
+  <p class="label">Character set · 83 glyphs</p>
   <div class="rows" id="rows">
     <div class="r1">ABCDEFGHIJKLM</div>
     <div class="r2">NOPQRSTUVWXYZ</div>
@@ -84,6 +84,7 @@
     <div class="r3">nopqrstuvwxyz</div>
     <div class="punct">0 1 2 3 4 5 6 7 8 9</div>
     <div class="punct">. , ? ! : ; ' " - ( ) /</div>
+    <div class="punct">&amp; @ # $ % + = *</div>
   </div>
 </section>
 
@@ -98,8 +99,8 @@
 <section class="compare">
   <div>
     <p class="label">Sans</p>
-    <div class="big" style="font-family:'GeomPerfect Sans'">Roscoe</div>
-    <p style="font-family:'GeomPerfect Sans'; font-size:22px">Proportional — each letter its natural width.</p>
+    <div class="big" style="font-family:'Cirtemoeg Sans'">Roscoe</div>
+    <p style="font-family:'Cirtemoeg Sans'; font-size:22px">Proportional — each letter its natural width.</p>
   </div>
   <div>
     <p class="label">Mono</p>
@@ -139,7 +140,7 @@
     const p = document.createElement('p');
     p.textContent = sample;
     p.style.fontSize = px + 'px';
-    p.style.fontFamily = '"GeomPerfect Sans", sans-serif';
+    p.style.fontFamily = '"Cirtemoeg Sans", sans-serif';
     wf.appendChild(p);
   });
 </script>
