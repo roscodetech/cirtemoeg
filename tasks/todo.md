@@ -126,3 +126,18 @@ tuning — cheap localised edits given the declarative recipes.
 
 CAUTION (this session): tool channel intermittently returned phantom "success" results;
 verify writes with ls/grep and outputs with a real file read before trusting.
+
+## Full-sweep findings (2026-06-01, name = Cirtemoeg, repo pushed dev+prod)
+Rendered all 75 glyphs at 170px (sweepU/sweepL) + zooms. Status of junctions vs the
+"smoothness like 5" standard:
+- [x] r shoulder: jutting flat terminal -> ended arc at +20deg (clean up-right arm). DONE.
+- [ ] B: waist join slightly pinched/uneven (zoom at 600px, even the two bowls).
+- [ ] G: spur/bar junction -- verify at 600px for facet.
+- [ ] f: top hook terminal blunt (acceptable but could ease); crossbar junction ok.
+- [ ] g / j tails: terminals blunt (acceptable, low priority).
+- Uppercase A C D E F H I J K L M N O P Q R S T U V W X Y Z: clean at 170px.
+- Lowercase a b c d e h i k l m n o p q s t u v w x y z: clean at 170px.
+- Digits 0-9: clean (2/4/6/8/9 all rebuilt this session).
+- Punct . , ? ! : ; - ( ) / : clean.
+NEXT: zoom B and G at 600px, apply shared-edge / clean-terminal fixes if faceted.
+Repo: github.com/roscodetech/cirtemoeg (dev + prod). Family "Cirtemoeg Sans/Mono".
