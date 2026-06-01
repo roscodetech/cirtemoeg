@@ -147,29 +147,30 @@ def dollar(pen, m: Metrics) -> None:
 
 
 def ampersand(pen, m: Metrics) -> None:
-    # Traditional 'et-ligature' form: two stacked loops welded into one backbone,
-    # a steep diagonal slashing from the bowl's lower-left up to an upper-right tail
-    # (ball terminal), and a short horizontal foot resting on the baseline.
+    # Crossing 'et' form: an upper loop welded onto an open lower bowl, with a LEG
+    # descending from the loop to a baseline foot and a TAIL rising from the bowl's
+    # upper lip — the leg and tail cross on the right to form the ampersand knot.
+    # Both free ends carry a ball terminal (echoing the serif teardrop terminals).
     cap = m.cap_height
-    rt = cap * 0.205                                      # upper loop
-    rb = cap * 0.25                                       # lower bowl
-    cx = cap * 0.31
-    cyt = cap - rt
-    cyb = rb
-    ring(pen, m, cx, cyt, rt)                             # upper loop
-    carc(pen, m, cx, cyb, rb, 30, 330, cap0=True, cap1=True)  # bowl, open lower-right
-    # weld the two loops along their shared left backbone
-    vstem(pen, m, cx - rt + m.half_stroke, cyb + rb - cap * 0.04, cyt - rt + cap * 0.04)
-    # steep main diagonal: bowl lower-left up to the upper-right tail
-    p_lo = arc_pt(cx, cyb, rb, 235)
-    p_hi = (cap * 0.74, cap * 0.60)
-    diag(pen, m, p_lo, p_hi)
-    joint(pen, m, *p_lo)
-    joint(pen, m, *p_hi)
-    # short horizontal foot from the bowl's lower-right lip
-    f0 = arc_pt(cx, cyb, rb, 330)
-    hbar(pen, m, f0[0], cap * 0.66, cap * 0.06)
-    joint(pen, m, *f0)
+    rt = cap * 0.185                                      # upper loop
+    rb = cap * 0.245                                      # lower bowl
+    cxt, cyt = cap * 0.30, cap * 0.62                     # loop lowered to overlap bowl
+    cxb, cyb = cap * 0.29, rb
+    ring(pen, m, cxt, cyt, rt)
+    carc(pen, m, cxb, cyb, rb, 52, 305, cap0=True, cap1=True)  # bowl, mouth on the right
+    joint(pen, m, cxb, cyb + rb)                         # weld loop to bowl top
+    # leg: loop's lower-right down to a baseline foot
+    leg0 = arc_pt(cxt, cyt, rt, -50)
+    leg1 = (cap * 0.58, cap * 0.05)
+    diag(pen, m, leg0, leg1)
+    joint(pen, m, *leg0)
+    draw_disc(pen, leg1[0], leg1[1], m.half_stroke)      # foot ball terminal
+    # tail: bowl's upper lip rising to the right (crosses the leg)
+    up = arc_pt(cxb, cyb, rb, 52)
+    tip = (cap * 0.66, cap * 0.64)
+    diag(pen, m, up, tip)
+    joint(pen, m, *up)
+    draw_disc(pen, tip[0], tip[1], m.half_stroke)        # tail ball terminal
 
 
 def at(pen, m: Metrics) -> None:
