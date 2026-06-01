@@ -153,21 +153,21 @@ def ampersand(pen, m: Metrics) -> None:
     # Both free ends carry a ball terminal (echoing the serif teardrop terminals).
     cap = m.cap_height
     rt = cap * 0.185                                      # upper loop
-    rb = cap * 0.245                                      # lower bowl
-    cxt, cyt = cap * 0.30, cap * 0.62                     # loop lowered to overlap bowl
-    cxb, cyb = cap * 0.29, rb
+    rb = cap * 0.24                                       # lower bowl
+    cxt, cyt = cap * 0.295, cap * 0.62                    # loop lowered to overlap bowl
+    cxb, cyb = cap * 0.285, rb
     ring(pen, m, cxt, cyt, rt)
-    carc(pen, m, cxb, cyb, rb, 52, 305, cap0=True, cap1=True)  # bowl, mouth on the right
+    carc(pen, m, cxb, cyb, rb, 60, 300, cap0=True, cap1=True)  # bowl, mouth on the right
     joint(pen, m, cxb, cyb + rb)                         # weld loop to bowl top
-    # leg: loop's lower-right down to a baseline foot
-    leg0 = arc_pt(cxt, cyt, rt, -50)
-    leg1 = (cap * 0.58, cap * 0.05)
+    # leg: loop's lower-right down to a baseline foot (crossing pulled toward centre)
+    leg0 = arc_pt(cxt, cyt, rt, -58)
+    leg1 = (cap * 0.52, cap * 0.05)
     diag(pen, m, leg0, leg1)
     joint(pen, m, *leg0)
     draw_disc(pen, leg1[0], leg1[1], m.half_stroke)      # foot ball terminal
-    # tail: bowl's upper lip rising to the right (crosses the leg)
-    up = arc_pt(cxb, cyb, rb, 52)
-    tip = (cap * 0.66, cap * 0.64)
+    # tail: bowl's upper lip rising steeply to the right (crosses the leg)
+    up = arc_pt(cxb, cyb, rb, 60)
+    tip = (cap * 0.64, cap * 0.66)
     diag(pen, m, up, tip)
     joint(pen, m, *up)
     draw_disc(pen, tip[0], tip[1], m.half_stroke)        # tail ball terminal
