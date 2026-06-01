@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeomPerfect — specimen</title>
+<style>
+  @font-face {
+    font-family: "GeomPerfect Sans";
+    src: url("GeomPerfect-Sans.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "GeomPerfect Mono";
+    src: url("GeomPerfect-Mono.otf") format("opentype");
+  }
+  :root { --ink:#111; --bg:#fafafa; --line:#e3e3e3; --accent:#3a86ff; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "GeomPerfect Sans", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .ui { font-family: system-ui, sans-serif; }
+  header {
+    padding: 48px 6vw 28px; border-bottom: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px 28px;
+  }
+  header h1 { font-size: 64px; margin: 0; font-family: "GeomPerfect Sans"; letter-spacing: .01em; }
+  header .sub { font-family: system-ui, sans-serif; color:#666; font-size:14px; }
+  .controls { margin-left:auto; display:flex; gap:18px; align-items:center; }
+  .controls label { font-family: system-ui, sans-serif; font-size:13px; color:#444; display:flex; gap:8px; align-items:center; }
+  section { padding: 40px 6vw; border-bottom: 1px solid var(--line); }
+  .label { font-family: system-ui, sans-serif; text-transform: uppercase; letter-spacing:.12em;
+           font-size: 11px; color:#999; margin: 0 0 18px; }
+  .rows div { line-height: 1.18; margin: 0; word-break: break-word; }
+  .r1 { font-size: 56px; }
+  .r2 { font-size: 56px; }
+  .r3 { font-size: 56px; }
+  .punct { font-size: 44px; }
+  .pangram { font-size: 40px; line-height: 1.35; max-width: 22ch; }
+  .mono { font-family: "GeomPerfect Mono"; }
+  .sizes p { margin: 0 0 10px; }
+  .waterfall p { margin: 2px 0; line-height: 1.1; }
+  .compare { display:grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .compare > div { padding: 28px; }
+  .compare > div:first-child { border-right: 1px solid var(--line); }
+  .compare .big { font-size: 90px; line-height: 1; }
+  textarea {
+    width: 100%; min-height: 120px; font-family: "GeomPerfect Sans";
+    font-size: 40px; border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 20px; background: #fff; color: var(--ink); resize: vertical;
+  }
+  .guide { position: relative; display:inline-block; }
+  footer { padding: 28px 6vw 60px; font-family: system-ui, sans-serif; color:#888; font-size: 13px; }
+  code { background:#eee; padding:2px 6px; border-radius:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titleSpecimen">GeomPerfect</h1>
+  <span class="sub">parametric geometric font · strict purity · x-height = cap/2 · true-circle o</span>
+  <div class="controls ui">
+    <label>Family
+      <select id="family">
+        <option value="GeomPerfect Sans">Sans (proportional)</option>
+        <option value="GeomPerfect Mono">Mono (fixed-width)</option>
+      </select>
+    </label>
+    <label>Size <input id="size" type="range" min="18" max="160" value="56"><span id="sizeVal">56</span>px</label>
+  </div>
+</header>
+
+<section>
+  <p class="label">Type here</p>
+  <textarea id="live" spellcheck="false">The quick brown fox jumps over the lazy dog.</textarea>
+</section>
+
+<section id="charset">
+  <p class="label">Character set · 75 glyphs</p>
+  <div class="rows" id="rows">
+    <div class="r1">ABCDEFGHIJKLM</div>
+    <div class="r2">NOPQRSTUVWXYZ</div>
+    <div class="r3">abcdefghijklm</div>
+    <div class="r3">nopqrstuvwxyz</div>
+    <div class="punct">0 1 2 3 4 5 6 7 8 9</div>
+    <div class="punct">. , ? ! : ; ' " - ( ) /</div>
+  </div>
+</section>
+
+<section>
+  <p class="label">The geometric contract</p>
+  <div class="rows">
+    <div class="r1 guide">Hoxbqg&nbsp;&nbsp;Ao&nbsp;&nbsp;bA</div>
+  </div>
+  <p class="ui sub" style="margin-top:16px">o is a true circle · a is exactly half the height of A · b reaches A's height · uniform stroke</p>
+</section>
+
+<section class="compare">
+  <div>
+    <p class="label">Sans</p>
+    <div class="big" style="font-family:'GeomPerfect Sans'">Roscoe</div>
+    <p style="font-family:'GeomPerfect Sans'; font-size:22px">Proportional — each letter its natural width.</p>
+  </div>
+  <div>
+    <p class="label">Mono</p>
+    <div class="big mono">Roscoe</div>
+    <p class="mono" style="font-size:22px">Fixed width — every glyph one cell.</p>
+  </div>
+</section>
+
+<section class="waterfall">
+  <p class="label">Waterfall</p>
+  <div id="waterfall"></div>
+</section>
+
+<footer class="ui">
+  Served locally from <code>dist/</code> · OTF via <code>@font-face</code> · Sans + Mono.
+  Build: <code>python -m perfect_font.cli --all</code>
+</footer>
+
+<script>
+  const live = document.getElementById('live');
+  const family = document.getElementById('family');
+  const size = document.getElementById('size');
+  const sizeVal = document.getElementById('sizeVal');
+  function apply() {
+    live.style.fontFamily = `"${family.value}", sans-serif`;
+    live.style.fontSize = size.value + 'px';
+    sizeVal.textContent = size.value;
+  }
+  family.addEventListener('change', apply);
+  size.addEventListener('input', apply);
+  apply();
+
+  // waterfall
+  const wf = document.getElementById('waterfall');
+  const sample = "Geometric Perfect 0123";
+  [14,18,24,32,44,60,80,110].forEach(px => {
+    const p = document.createElement('p');
+    p.textContent = sample;
+    p.style.fontSize = px + 'px';
+    p.style.fontFamily = '"GeomPerfect Sans", sans-serif';
+    wf.appendChild(p);
+  });
+</script>
+</body>
+</html>
