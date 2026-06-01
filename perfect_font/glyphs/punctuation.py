@@ -147,25 +147,29 @@ def dollar(pen, m: Metrics) -> None:
 
 
 def ampersand(pen, m: Metrics) -> None:
-    # Upper loop + an OPEN lower bowl (which kills the figure-8 read) + a crossing
-    # diagonal that links the loop to the bowl and continues as the tail flicking
-    # out of the bowl's right mouth.
+    # Traditional 'et-ligature' form: two stacked loops welded into one backbone,
+    # a steep diagonal slashing from the bowl's lower-left up to an upper-right tail
+    # (ball terminal), and a short horizontal foot resting on the baseline.
     cap = m.cap_height
-    rt = cap * 0.16                                       # upper loop
+    rt = cap * 0.205                                      # upper loop
     rb = cap * 0.25                                       # lower bowl
-    cxt = rt + cap * 0.05
+    cx = cap * 0.31
     cyt = cap - rt
-    cxb = cyb = rb
-    ring(pen, m, cxt, cyt, rt)                            # upper loop
-    carc(pen, m, cxb, cyb, rb, 25, 330, cap0=True, cap1=True)  # bowl, mouth on the right
-    # tail from the bowl's lower-right lip out toward the baseline-right
-    t0 = arc_pt(cxb, cyb, rb, 330)
-    diag(pen, m, t0, (cap * 0.64, cap * 0.04))
-    joint(pen, m, *t0)
-    # crossing diagonal: upper-loop foot down to the bowl's upper-right lip
-    p0 = (cxt + rt * 0.2, cyt - rt)
-    diag(pen, m, p0, arc_pt(cxb, cyb, rb, 25))
-    joint(pen, m, *p0)
+    cyb = rb
+    ring(pen, m, cx, cyt, rt)                             # upper loop
+    carc(pen, m, cx, cyb, rb, 30, 330, cap0=True, cap1=True)  # bowl, open lower-right
+    # weld the two loops along their shared left backbone
+    vstem(pen, m, cx - rt + m.half_stroke, cyb + rb - cap * 0.04, cyt - rt + cap * 0.04)
+    # steep main diagonal: bowl lower-left up to the upper-right tail
+    p_lo = arc_pt(cx, cyb, rb, 235)
+    p_hi = (cap * 0.74, cap * 0.60)
+    diag(pen, m, p_lo, p_hi)
+    joint(pen, m, *p_lo)
+    joint(pen, m, *p_hi)
+    # short horizontal foot from the bowl's lower-right lip
+    f0 = arc_pt(cx, cyb, rb, 330)
+    hbar(pen, m, f0[0], cap * 0.66, cap * 0.06)
+    joint(pen, m, *f0)
 
 
 def at(pen, m: Metrics) -> None:
