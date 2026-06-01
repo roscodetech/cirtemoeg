@@ -147,30 +147,30 @@ def dollar(pen, m: Metrics) -> None:
 
 
 def ampersand(pen, m: Metrics) -> None:
-    # Crossing 'et' form: an upper loop welded onto an open lower bowl, with a LEG
-    # descending from the loop to a baseline foot and a TAIL rising from the bowl's
-    # upper lip — the leg and tail cross on the right to form the ampersand knot.
-    # Both free ends carry a ball terminal (echoing the serif teardrop terminals).
+    # Accurate self-crossing form: two diagonals cross in an X (UL->LR and UR->LL);
+    # an arc over the top closes them into the UPPER loop, an arc under the bottom
+    # closes them into the LARGER lower bowl, and a tail extends from the lower-right.
+    # The single self-crossing is the true ampersand knot — geometric, not serif.
     cap = m.cap_height
-    rt = cap * 0.185                                      # upper loop
-    rb = cap * 0.24                                       # lower bowl
-    cxt, cyt = cap * 0.295, cap * 0.62                    # loop lowered to overlap bowl
-    cxb, cyb = cap * 0.285, rb
-    ring(pen, m, cxt, cyt, rt)
-    carc(pen, m, cxb, cyb, rb, 60, 300, cap0=True, cap1=True)  # bowl, mouth on the right
-    joint(pen, m, cxb, cyb + rb)                         # weld loop to bowl top
-    # leg: loop's lower-right down to a baseline foot (crossing pulled toward centre)
-    leg0 = arc_pt(cxt, cyt, rt, -58)
-    leg1 = (cap * 0.52, cap * 0.05)
-    diag(pen, m, leg0, leg1)
-    joint(pen, m, *leg0)
-    draw_disc(pen, leg1[0], leg1[1], m.half_stroke)      # foot ball terminal
-    # tail: bowl's upper lip rising steeply to the right (crosses the leg)
-    up = arc_pt(cxb, cyb, rb, 60)
-    tip = (cap * 0.64, cap * 0.66)
-    diag(pen, m, up, tip)
-    joint(pen, m, *up)
-    draw_disc(pen, tip[0], tip[1], m.half_stroke)        # tail ball terminal
+    ul = (0.24 * cap, 0.70 * cap)        # upper-left  (top of the '\' diagonal)
+    ur = (0.50 * cap, 0.70 * cap)        # upper-right (top of the '/' diagonal)
+    ll = (0.15 * cap, 0.16 * cap)        # lower-left  (foot of the '/' diagonal)
+    lr = (0.55 * cap, 0.16 * cap)        # lower-right (foot of the '\' diagonal)
+    tip = (0.74 * cap, 0.40 * cap)       # tail terminal
+    diag(pen, m, ul, lr)                 # the X: '\' upper-left -> lower-right
+    diag(pen, m, ur, ll)                 # the X: '/' upper-right -> lower-left
+    # upper loop: arc over the top joining the two upper ends
+    carc(pen, m, (ul[0] + ur[0]) / 2, ul[1], (ur[0] - ul[0]) / 2, 0, 180)
+    joint(pen, m, *ul)
+    joint(pen, m, *ur)
+    # lower bowl: wider arc under the bottom joining the two lower ends
+    carc(pen, m, (ll[0] + lr[0]) / 2, ll[1], (lr[0] - ll[0]) / 2, 180, 360)
+    joint(pen, m, *ll)
+    joint(pen, m, *lr)
+    # tail from the lower-right, ending in a ball terminal
+    diag(pen, m, lr, tip)
+    joint(pen, m, *lr)
+    draw_disc(pen, tip[0], tip[1], m.half_stroke)
 
 
 def at(pen, m: Metrics) -> None:
