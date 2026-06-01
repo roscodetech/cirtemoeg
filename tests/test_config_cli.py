@@ -13,13 +13,13 @@ def test_config_defaults_to_strict_sans():
     cfg = BuildConfig()
     m = cfg.metrics()
     assert not m.overshoot_enabled
-    assert cfg.stem == "GeomPerfect-Sans"
+    assert cfg.stem == "Cirtemoeg-Sans"
 
 
 def test_config_optical_and_mono_naming():
     cfg = BuildConfig(mono=True, optical=True)
     assert cfg.metrics().overshoot_enabled
-    assert cfg.stem == "GeomPerfect-Mono-Optical"
+    assert cfg.stem == "Cirtemoeg-Mono-Optical"
 
 
 def test_config_metric_overrides():
@@ -35,7 +35,7 @@ def test_config_metric_overrides():
 def test_cli_builds_mono_font(tmp_path):
     rc = main(["--mono", "--out", str(tmp_path)])
     assert rc == 0
-    assert (tmp_path / "GeomPerfect-Mono.otf").exists()
-    ttf = tmp_path / "GeomPerfect-Mono.ttf"
+    assert (tmp_path / "Cirtemoeg-Mono.otf").exists()
+    ttf = tmp_path / "Cirtemoeg-Mono.ttf"
     assert ttf.exists()
     assert TTFont(ttf)["post"].isFixedPitch != 0

@@ -160,9 +160,11 @@ def q(pen, m: Metrics) -> None:
 
 def r(pen, m: Metrics) -> None:
     x, hs = m.x_height, m.half_stroke
-    r_a = x * 0.40
+    r_a = x * 0.42
     vstem(pen, m, hs, 0, x)
-    carc(pen, m, hs, x - r_a, r_a, 90, -8, cap0=True)  # shoulder arcs up-right off stem top
+    # shoulder: from the stem top (90 deg) arc up and over to the right, stopping at ~20 deg
+    # so the terminal points up-right (a short open arm, reads clearly as r, minimal jut).
+    carc(pen, m, hs, x - r_a, r_a, 90, 20, cap0=True)
 
 
 def s(pen, m: Metrics) -> None:
