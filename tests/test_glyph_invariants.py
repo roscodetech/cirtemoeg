@@ -39,6 +39,7 @@ def _points(name: str, m: Metrics) -> list[tuple[float, float]]:
 def test_charset_is_complete():
     required = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
     required |= set(".,?!:;'\"-()/ ")
+    required |= set("&@#$%+=*")
     have = {chr(cp) for cp in unicodes()}
     assert required - have == set()
 

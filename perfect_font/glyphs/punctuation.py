@@ -1,11 +1,11 @@
-"""Punctuation: . , : ; ! ? - ( ) / ' " and space."""
+"""Punctuation: . , : ; ! ? - ( ) / ' " and symbols & @ # $ % + = * and space."""
 
 from __future__ import annotations
 
-from perfect_font.glyphs.base import NARROW, GlyphDef
-from perfect_font.glyphs.parts import arc, carc, diag, hbar, joint, vstem
+from perfect_font.glyphs.base import FLAT, NARROW, ROUND, GlyphDef
+from perfect_font.glyphs.parts import arc, arc_pt, carc, diag, hbar, joint, ring, vstem
 from perfect_font.metrics import Metrics
-from perfect_font.pens import draw_disc, draw_stroke
+from perfect_font.pens import draw_disc, draw_ring, draw_stroke
 
 
 def _dot(pen, m: Metrics, cx: float, cy: float) -> None:
@@ -92,6 +92,82 @@ def quotedbl(pen, m: Metrics) -> None:
     _comma_tail(pen, m, m.half_stroke + s * 1.4, m.cap_height)
 
 
+def plus(pen, m: Metrics) -> None:
+    cap = m.cap_height
+    midy = cap * 0.46
+    half = cap * 0.26
+    hbar(pen, m, 0, 2 * half, midy)                      # horizontal
+    vstem(pen, m, half, midy - half, midy + half)        # vertical
+
+
+def equal(pen, m: Metrics) -> None:
+    cap = m.cap_height
+    w = cap * 0.52
+    hbar(pen, m, 0, w, cap * 0.56)
+    hbar(pen, m, 0, w, cap * 0.36)
+
+
+def asterisk(pen, m: Metrics) -> None:
+    cap, hs = m.cap_height, m.half_stroke
+    cy = cap * 0.72
+    r = cap * 0.20
+    import math
+    for k in range(3):                                   # three crossing strokes -> 6 arms
+        a = math.radians(60 * k + 90)
+        dx, dy = r * math.cos(a), r * math.sin(a)
+        draw_stroke(pen, (hs - dx, cy - dy), (hs + dx, cy + dy), m.stroke)
+
+
+def numbersign(pen, m: Metrics) -> None:
+    cap = m.cap_height
+    w = cap * 0.62
+    # two verticals (slightly sheared look via vertical bars) + two horizontals
+    vstem(pen, m, w * 0.34, 0, cap)
+    vstem(pen, m, w * 0.66, 0, cap)
+    hbar(pen, m, 0, w, cap * 0.64)
+    hbar(pen, m, 0, w, cap * 0.36)
+
+
+def percent(pen, m: Metrics) -> None:
+    cap = m.cap_height
+    r = cap * 0.16
+    draw_ring(pen, r, cap - r, r, m.stroke)              # upper-left ring
+    draw_ring(pen, cap * 0.62 - r + r, r, r, m.stroke)   # lower-right ring
+    diag(pen, m, (cap * 0.62, cap), (0.0, 0.0))          # slash through
+
+
+def dollar(pen, m: Metrics) -> None:
+    cap, hs = m.cap_height, m.half_stroke
+    r = cap / 4
+    cx = r
+    # the S body
+    carc(pen, m, cx, cap - r, r, 28, 270, cap1=True)
+    carc(pen, m, cx, r, r, 28 + 180, 270 + 180, cap1=True)
+    vstem(pen, m, cx, -cap * 0.12, cap * 1.12)           # vertical bar through
+
+
+def ampersand(pen, m: Metrics) -> None:
+    cap = m.cap_height
+    rt = cap * 0.19                                       # upper loop
+    rb = cap * 0.27                                       # lower bowl
+    cxt = rt + cap * 0.06
+    ring(pen, m, cxt, cap - rt, rt)                      # upper loop
+    ring(pen, m, rb, rb, rb)                             # lower bowl
+    # diagonal tail from the upper loop down through to the lower-right, like an &.
+    diag(pen, m, (cxt, cap - 2 * rt), (cap * 0.60, cap * 0.10))
+
+
+def at(pen, m: Metrics) -> None:
+    cap = m.cap_height
+    cx = cy = cap * 0.5
+    R = cap * 0.46                                        # outer ring radius
+    # outer ring left open at the lower-right (an arc, not a full ring).
+    arc(pen, m, cx, cy, R, 300, -40)
+    ring(pen, m, cx, cy, cap * 0.15)                      # inner 'a' bowl
+    # the inner bowl's right wall continues down as a short stem (the 'a' of @).
+    vstem(pen, m, cx + cap * 0.15 - m.half_stroke, cy - cap * 0.15, cy + cap * 0.15)
+
+
 PUNCTUATION: list[GlyphDef] = [
     GlyphDef("space", 0x20, lambda *_: None, NARROW, is_blank=True),
     GlyphDef("period", 0x2E, period, NARROW),
@@ -106,4 +182,12 @@ PUNCTUATION: list[GlyphDef] = [
     GlyphDef("slash", 0x2F, slash, NARROW),
     GlyphDef("quotesingle", 0x27, quotesingle, NARROW),
     GlyphDef("quotedbl", 0x22, quotedbl, NARROW),
+    GlyphDef("plus", 0x2B, plus, FLAT),
+    GlyphDef("equal", 0x3D, equal, FLAT),
+    GlyphDef("asterisk", 0x2A, asterisk, NARROW),
+    GlyphDef("numbersign", 0x23, numbersign, FLAT),
+    GlyphDef("percent", 0x25, percent, ROUND),
+    GlyphDef("dollar", 0x24, dollar, ROUND),
+    GlyphDef("ampersand", 0x26, ampersand, ROUND),
+    GlyphDef("at", 0x40, at, ROUND),
 ]
