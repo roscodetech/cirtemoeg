@@ -73,7 +73,10 @@ def f(pen, m: Metrics) -> None:
     r = x * 0.42
     xc = r + hs
     vstem(pen, m, xc, 0, m.cap_height - r)
-    carc(pen, m, xc + r, m.cap_height - r, r, 180, 90, cap0=True)  # top hook off the stem
+    # top hook springs from the stem (180 deg), arches over the apex and comes down
+    # to terminate up-and-right at 35 deg -- a full hook (matches r's shoulder), not
+    # a quarter cut off at the top.
+    carc(pen, m, xc + r, m.cap_height - r, r, 180, 35, cap0=True)
     hbar(pen, m, 0, xc + r, x - hs)
 
 
@@ -185,7 +188,9 @@ def t(pen, m: Metrics) -> None:
     xc = x * 0.34
     vstem(pen, m, xc, r_a, x * 1.42)
     hbar(pen, m, 0, xc + r_a, x - hs)
-    carc(pen, m, xc + r_a, r_a, r_a, 180, 270, cap0=True)  # foot curves right off stem base
+    # foot springs from the stem base (180 deg), curls under and up to terminate
+    # up-and-right at 340 deg -- a full J-foot, not a quarter cut off at the baseline.
+    carc(pen, m, xc + r_a, r_a, r_a, 180, 340, cap0=True)
 
 
 def u(pen, m: Metrics) -> None:
