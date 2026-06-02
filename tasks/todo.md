@@ -158,3 +158,31 @@ Fixed the three reported defects, then ran a quantitative symmetry audit over al
 - Dev tools added: glyph_lab.py (big guided single-glyph render), variant_lab.py
   (candidate compare), render_chars.py (guided rows), symmetry_audit.py (LR/TB/ROT residuals).
 - 72 tests pass (8 new invariants). Font rebuilt: dist/Cirtemoeg-Sans.{otf,ttf} + proof.
+
+## Digit 4 cleanup (2026-06-02)
+- [x] Top peak: diagonal top-right now lands on the stem's top-RIGHT corner so the diagonal
+  OVERLAPS the whole stem top -> solid, gap-free peak (was single-point contact with a white
+  slit running to the cap line).
+- [x] Lower-left: crossbar left edge now starts flush under the diagonal's outer foot
+  (bl_x) -> no jutting tab/spike at the bottom-left.
+- four_lab.py added for digit-4 candidate tuning (foot_rx=0.18 chosen). 72 tests pass; rebuilt.
+
+## Ampersand congruence pass (2026-06-02)
+- [x] Root cause of the rough &: crossing strokes used diag() (horizontal end-cuts wider than
+  the stroke on a shallow slope), so their tops/feet poked past the closing arcs as fangs.
+- [x] Switched the two crossing strokes + tail to draw_stroke() (perpendicular stroke-wide
+  caps), so the hs joint discs weld every terminal cleanly -- no fangs.
+- [x] Rebalanced into a congruent self-crossing knot: top loop r=0.17cap, bottom bowl r=0.25cap
+  (close in size, both round); top edge near cap, bottom edge on baseline; slight loop-centre
+  lean (0.34 vs 0.38) like a written &. Tail flicks to a ball terminal at (0.76, 0.34)cap.
+- amp_lab.py rewritten as the iteration harness (current/balanced/rounder/tighter; chose
+  rounder). 72 tests pass; font rebuilt.
+
+## @ cleanup (2026-06-02)
+- [x] Inner 'a' was a blob: uniform stroke on a tiny bowl (rb=0.17cap) left a ~31u pinhole
+  counter + a heavy bar. Enlarged to rb=0.20cap so the counter reads and it's a legible
+  single-story a (bowl ring + right stem), shifted slightly left for an even moat.
+- [x] Outer shell now opens cleanly at the lower-right (a0=-42, a1=250) instead of a big
+  bottom gap; tail is a short draw_stroke flick out to a ball terminal (clean cap, no blunt
+  arrowhead), kept clear of the inner a. R=0.43cap.
+- at_lab.py added as the @ iteration harness. 72 tests pass; font rebuilt.

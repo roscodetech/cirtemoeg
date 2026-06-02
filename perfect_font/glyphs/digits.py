@@ -71,23 +71,25 @@ def four(pen, m: Metrics) -> None:
     xv = w - cap * 0.20            # vertical-stem centre
     bar_y = cap * 0.30            # crossbar centre
     bar_top = bar_y + hs
-    stem_l = xv - hs
-    # Diagonal as ONE polygon with horizontal top/bottom edges. Its RIGHT edge runs from
-    # the stem's top-left corner (stem_l, cap) down to a foot on the crossbar; the top
-    # edge shares the stem's left edge (flush, no step), the bottom edge lies on the
-    # crossbar top (flush, no step). Horizontal width keeps perpendicular thickness == s.
-    foot_x = cap * 0.16
-    dx, dy = foot_x - stem_l, bar_top - cap
+    # Diagonal as ONE polygon with horizontal top/bottom edges. Its top-right corner sits on
+    # the stem's top-RIGHT corner, so the diagonal OVERLAPS the whole stem top -> a solid,
+    # gap-free peak (no white slit running up to the cap line). The foot lands on the crossbar
+    # top, and the crossbar starts flush under the diagonal's outer foot -> a clean, spike-free
+    # lower-left corner. Horizontal width keeps perpendicular thickness == stroke.
+    TRx = xv + hs                 # diagonal top-right == stem top-right
+    foot_rx = cap * 0.18          # diagonal foot (inner/right edge) on the crossbar
+    dx, dy = foot_rx - TRx, bar_top - cap
     L = math.hypot(dx, dy)
-    hw = s * L / abs(dy)          # horizontal width so perpendicular thickness == stroke
+    hw = s * L / abs(dy)
+    bl_x = foot_rx - hw           # diagonal outer foot == crossbar left edge
     draw_polygon(pen, [
-        (stem_l, cap),            # right edge, top (on the stem's left edge)
-        (foot_x, bar_top),        # right edge, bottom (on the crossbar top)
-        (foot_x - hw, bar_top),   # left edge, bottom
-        (stem_l - hw, cap),       # left edge, top
+        (TRx, cap),               # right edge, top (on the stem's right edge)
+        (foot_rx, bar_top),       # right edge, bottom (on the crossbar top)
+        (bl_x, bar_top),          # left edge, bottom
+        (TRx - hw, cap),          # left edge, top
     ])
     vstem(pen, m, xv, 0, cap)                          # full vertical stem (orthogonal)
-    hbar(pen, m, 0, w, bar_y)                          # full crossbar (orthogonal)
+    hbar(pen, m, bl_x, w, bar_y)                       # crossbar, flush under the diagonal foot
 
 
 def five(pen, m: Metrics) -> None:
