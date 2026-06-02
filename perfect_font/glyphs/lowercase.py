@@ -59,7 +59,7 @@ def e(pen, m: Metrics) -> None:
     cx = cy = r
     # bowl arc: start at the crossbar's right end, sweep CCW up/left/down to a clean
     # lower-right terminal -> leaves an open aperture like c.
-    bar_y = r * 0.92               # crossbar sits a little above centre
+    bar_y = cy                     # crossbar on the bowl centre -> equal upper/lower counters
     # angle on the ring centerline where the bar meets the right wall
     sin_t = (bar_y - cy) / r
     a_start = math.degrees(math.asin(max(-1.0, min(1.0, sin_t))))  # right side at bar height
