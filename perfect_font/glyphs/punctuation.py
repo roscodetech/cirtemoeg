@@ -147,45 +147,52 @@ def dollar(pen, m: Metrics) -> None:
 
 
 def ampersand(pen, m: Metrics) -> None:
-    # Accurate self-crossing form: two diagonals cross in an X (UL->LR and UR->LL);
-    # an arc over the top closes them into the UPPER loop, an arc under the bottom
-    # closes them into the LARGER lower bowl, and a tail extends from the lower-right.
-    # The single self-crossing is the true ampersand knot — geometric, not serif.
+    # Self-crossing knot: two strokes cross in an X (UL->LR and UR->LL); a semicircle
+    # over the top closes the UPPER loop, a wider one under the bottom closes the LARGER
+    # lower bowl, and a tail flicks out from the lower-right to a ball terminal. The two
+    # loops are kept round and close in size (congruent), and the crossing strokes use
+    # perpendicular caps so the hs joint discs weld every terminal cleanly -- no fangs.
     cap = m.cap_height
-    ul = (0.24 * cap, 0.70 * cap)        # upper-left  (top of the '\' diagonal)
-    ur = (0.50 * cap, 0.70 * cap)        # upper-right (top of the '/' diagonal)
-    ll = (0.15 * cap, 0.16 * cap)        # lower-left  (foot of the '/' diagonal)
-    lr = (0.55 * cap, 0.16 * cap)        # lower-right (foot of the '\' diagonal)
-    tip = (0.74 * cap, 0.40 * cap)       # tail terminal
-    diag(pen, m, ul, lr)                 # the X: '\' upper-left -> lower-right
-    diag(pen, m, ur, ll)                 # the X: '/' upper-right -> lower-left
-    # upper loop: arc over the top joining the two upper ends
-    carc(pen, m, (ul[0] + ur[0]) / 2, ul[1], (ur[0] - ul[0]) / 2, 0, 180)
-    joint(pen, m, *ul)
-    joint(pen, m, *ur)
-    # lower bowl: wider arc under the bottom joining the two lower ends
-    carc(pen, m, (ll[0] + lr[0]) / 2, ll[1], (lr[0] - ll[0]) / 2, 180, 360)
-    joint(pen, m, *ll)
-    joint(pen, m, *lr)
-    # tail from the lower-right, ending in a ball terminal
-    diag(pen, m, lr, tip)
+    rt, rb = 0.17 * cap, 0.25 * cap          # upper-loop / lower-bowl centreline radii
+    cxt, cxb = 0.34 * cap, 0.38 * cap        # loop centre x (slight lean, like a written &)
+    cyt = 0.86 * cap - rt                    # upper loop: top edge near cap height
+    cyb = rb                                 # lower bowl: bottom edge on the baseline
+    ul = (cxt - rt, cyt)                     # upper-left  (top of the '\' stroke)
+    ur = (cxt + rt, cyt)                     # upper-right (top of the '/' stroke)
+    ll = (cxb - rb, cyb)                     # lower-left  (foot of the '/' stroke)
+    lr = (cxb + rb, cyb)                     # lower-right (foot of the '\' stroke)
+    draw_stroke(pen, ul, lr, m.stroke)       # the X: '\' upper-left -> lower-right
+    draw_stroke(pen, ur, ll, m.stroke)       # the X: '/' upper-right -> lower-left
+    carc(pen, m, cxt, cyt, rt, 0, 180)       # upper loop (semicircle over the top)
+    carc(pen, m, cxb, cyb, rb, 180, 360)     # lower bowl (semicircle under the bottom)
+    for pt in (ul, ur, ll, lr):
+        joint(pen, m, *pt)
+    tip = (0.76 * cap, 0.34 * cap)           # tail terminal
+    draw_stroke(pen, lr, tip, m.stroke)      # tail flicking out from the lower-right
     joint(pen, m, *lr)
     draw_disc(pen, tip[0], tip[1], m.half_stroke)
 
 
 def at(pen, m: Metrics) -> None:
-    # Outer ring open at the lower-right with a tail curling out, wrapping a small
-    # lowercase 'a' (bowl ring + right stem) with a clearly open counter.
-    cap = m.cap_height
+    # Outer shell open at the lower-right with a short ball-terminal tail flicking out,
+    # wrapping a legible single-story 'a' (bowl ring + right stem) that keeps a clear
+    # counter and an even moat from the shell. draw_stroke gives the tail a clean cap.
+    import math
+    cap, hs = m.cap_height, m.half_stroke
     cx = cy = cap * 0.5
-    R = cap * 0.45                                        # outer ring centreline radius
-    carc(pen, m, cx, cy, R, -25, 250)                    # outer ring, open lower-right
-    t0 = arc_pt(cx, cy, R, -25)
-    diag(pen, m, t0, (cx + R * 1.05, cy - R * 0.1))      # tail flicking out
-    rb = cap * 0.17                                       # inner 'a' bowl
-    bx = cx - cap * 0.02
+    R = cap * 0.43                                       # outer shell centreline radius
+    a0, a1 = -42, 250                                    # open at the lower-right
+    carc(pen, m, cx, cy, R, a0, a1)
+    start = arc_pt(cx, cy, R, a0)                        # shell's lower-right end
+    ta = math.radians(a0 - 6)                            # tail flicks slightly further down
+    tip = (cx + R * 1.32 * math.cos(ta), cy + R * 1.32 * math.sin(ta))
+    draw_stroke(pen, start, tip, m.stroke)
+    joint(pen, m, *start)
+    draw_disc(pen, tip[0], tip[1], hs)
+    rb = cap * 0.20                                      # inner 'a' bowl (outer radius)
+    bx = cx - cap * 0.03
     ring(pen, m, bx, cy, rb)
-    vstem(pen, m, bx + rb - m.half_stroke, cy - rb, cy + rb)  # 'a' stem
+    vstem(pen, m, bx + rb - hs, cy - rb, cy + rb)        # 'a' right stem
 
 
 PUNCTUATION: list[GlyphDef] = [
