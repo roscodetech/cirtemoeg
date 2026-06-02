@@ -88,7 +88,7 @@ def test_stem_width_equals_stroke(m):
 
 
 @pytest.mark.parametrize(
-    "name", ["o", "O", "A", "H", "T", "V", "X", "x", "v", "M", "W", "I", "eight"]
+    "name", ["o", "O", "A", "H", "T", "V", "X", "x", "v", "M", "W", "I", "eight", "u", "U"]
 )
 def test_vertical_axis_symmetry(name, m):
     pts = _points(name, m)
@@ -101,3 +101,34 @@ def test_vertical_axis_symmetry(name, m):
         assert any(
             abs(mx - rx) < 1.5 and abs(round(y, 1) - ry) < 1.5 for rx, ry in rounded
         ), f"{name} not symmetric at ({x:.1f},{y:.1f})"
+
+
+@pytest.mark.parametrize("name", ["s", "S", "z", "Z", "N"])
+def test_point_symmetry(name, m):
+    """These glyphs are designed as exact 180-degree rotations about their centre,
+    so top/bottom (and left/right) terminals always mirror each other."""
+    pts = _points(name, m)
+    cx = (min(p[0] for p in pts) + max(p[0] for p in pts)) / 2
+    cy = (min(p[1] for p in pts) + max(p[1] for p in pts)) / 2
+    rounded = {(round(x, 1), round(y, 1)) for x, y in pts}
+    for x, y in pts:
+        mx, my = round(2 * cx - x, 1), round(2 * cy - y, 1)
+        assert any(
+            abs(mx - rx) < 1.5 and abs(my - ry) < 1.5 for rx, ry in rounded
+        ), f"{name} not point-symmetric at ({x:.1f},{y:.1f})"
+
+
+def _below_baseline_box(name: str, m: Metrics):
+    """Bounding box (width, min_y, height) of the descender tail only (y < 0)."""
+    below = [p for p in _points(name, m) if p[1] < -TOL]
+    xs, ys = [p[0] for p in below], [p[1] for p in below]
+    return max(xs) - min(xs), min(ys), max(ys) - min(ys)
+
+
+def test_g_and_j_underhangs_identical(m):
+    """g and j share one tail recipe, so their underhangs match in width and length."""
+    gw, gminy, gh = _below_baseline_box("g", m)
+    jw, jminy, jh = _below_baseline_box("j", m)
+    assert abs(gw - jw) < TOL, f"tail widths differ: g={gw:.1f} j={jw:.1f}"
+    assert abs(gminy - jminy) < TOL, f"tail depths differ: g={gminy:.1f} j={jminy:.1f}"
+    assert abs(gh - jh) < TOL, f"tail heights differ: g={gh:.1f} j={jh:.1f}"

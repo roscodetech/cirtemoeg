@@ -80,6 +80,18 @@ def carc(
     return p0, p1
 
 
+def stem_with_tail(pen, m: Metrics, stem_x: float, radius: float, top: float) -> None:
+    """A descender stem whose foot curls a half-circle to the left into the descender.
+
+    The outer edge of the curl rests exactly on the descender line. Shared by g and j
+    so their underhangs are identical in width (``2*radius``) and length (descender
+    depth) -- the symmetry cannot drift because both glyphs call this one recipe.
+    """
+    ctr_y = m.descender + radius + m.half_stroke
+    vstem(pen, m, stem_x, ctr_y, top)
+    carc(pen, m, stem_x - radius, ctr_y, radius, 0, -180, cap0=True)
+
+
 def half_right(pen, m: Metrics, cx: float, cy: float, r: float) -> None:
     """Right-bulging semicircle (vertical flat side at x=cx): bowls of B, D, P, R."""
     draw_ring_arc(pen, cx, cy, r, m.stroke, 90, -90)

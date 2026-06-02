@@ -16,8 +16,13 @@ from perfect_font.glyphs.parts import (
     hbar,
     joint,
     ring,
+    stem_with_tail,
     vstem,
 )
+
+# Descender-tail curl radius (x-height fraction). Shared by g and j so their
+# underhangs are identical -- see ``stem_with_tail``.
+TAIL_RADIUS = 0.42
 from perfect_font.glyphs.strokes import draw_chevron
 from perfect_font.metrics import Metrics
 from perfect_font.pens import draw_disc, draw_stroke
@@ -75,10 +80,7 @@ def f(pen, m: Metrics) -> None:
 def g(pen, m: Metrics) -> None:
     r, cy = _bowl(pen, m)
     xc = 2 * r - m.half_stroke
-    tr = r * 0.75
-    ctr_y = m.descender + tr + m.half_stroke  # so tail outer edge touches the descender
-    vstem(pen, m, xc, ctr_y, m.x_height)
-    carc(pen, m, xc - tr, ctr_y, tr, 0, -175, cap0=True)  # tail hooks left off stem foot
+    stem_with_tail(pen, m, xc, m.x_height * TAIL_RADIUS, m.x_height)  # tail identical to j
 
 
 def _arch_glyph(pen, m: Metrics, left_full_to: float) -> float:
@@ -104,11 +106,9 @@ def i(pen, m: Metrics) -> None:
 
 def j(pen, m: Metrics) -> None:
     hs = m.half_stroke
-    r = m.x_height * 0.42
-    xc = 2 * r - hs
-    ctr_y = m.descender + r + hs  # tail outer edge touches the descender
-    vstem(pen, m, xc, ctr_y, m.x_height)
-    carc(pen, m, xc - r, ctr_y, r, 0, -180, cap0=True)  # bottom hook off stem
+    tr = m.x_height * TAIL_RADIUS
+    xc = 2 * tr - hs
+    stem_with_tail(pen, m, xc, tr, m.x_height)  # tail identical to g
     draw_disc(pen, xc, m.x_height + m.stroke * 0.55 + hs, hs)
 
 
@@ -160,19 +160,23 @@ def q(pen, m: Metrics) -> None:
 
 def r(pen, m: Metrics) -> None:
     x, hs = m.x_height, m.half_stroke
-    r_a = x * 0.42
+    r_a = x * 0.44                       # same shoulder radius as n: rounds identically
+    cy = x - r_a
+    cx = hs + r_a                        # centre offset so the arc springs off the stem
     vstem(pen, m, hs, 0, x)
-    # shoulder: from the stem top (90 deg) arc up and over to the right, stopping at ~20 deg
-    # so the terminal points up-right (a short open arm, reads clearly as r, minimal jut).
-    carc(pen, m, hs, x - r_a, r_a, 90, 20, cap0=True)
+    # shoulder springs from the stem (180 deg), arches over the apex, and the arm
+    # terminates up-and-right at 25 deg -- a rounded shoulder that never tilts down.
+    carc(pen, m, cx, cy, r_a, 180, 25, cap0=True)
 
 
 def s(pen, m: Metrics) -> None:
     x = m.x_height
     r = x / 4  # so the two bowls meet exactly at the waist (x = 4r)
     cx = r
-    carc(pen, m, cx, x - r, r, 25, 270, cap1=True)  # top bowl -> waist
-    carc(pen, m, cx, r, r, 90, -205)                # waist -> bottom bowl
+    # bottom bowl is the exact 180deg rotation of the top about the waist (cx, x/2):
+    # equal bowls, and the lower-left terminal mirrors the upper-right one.
+    carc(pen, m, cx, x - r, r, 25, 270, cap1=True)  # top bowl: terminal(25) -> waist(270)
+    carc(pen, m, cx, r, r, 90, -155)                # bottom bowl: waist(90) -> terminal(-155)
 
 
 def t(pen, m: Metrics) -> None:
@@ -189,9 +193,11 @@ def u(pen, m: Metrics) -> None:
     w = x * 0.88
     r_a = w / 2
     cy = r_a
+    # both stems spring from the arch (cy -> x) so u is left-right symmetric, exactly
+    # like U -- no lone right foot dropping to the baseline.
     vstem(pen, m, hs, cy, x)
     half_bottom(pen, m, w / 2, cy, r_a)
-    vstem(pen, m, w - hs, 0, x)
+    vstem(pen, m, w - hs, cy, x)
 
 
 def v(pen, m: Metrics) -> None:

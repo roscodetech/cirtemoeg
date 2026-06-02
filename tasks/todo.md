@@ -141,3 +141,20 @@ Rendered all 75 glyphs at 170px (sweepU/sweepL) + zooms. Status of junctions vs 
 - Punct . , ? ! : ; - ( ) / : clean.
 NEXT: zoom B and G at 600px, apply shared-edge / clean-terminal fixes if faceted.
 Repo: github.com/roscodetech/cirtemoeg (dev + prod). Family "Cirtemoeg Sans/Mono".
+
+## Correctness + symmetry sweep (2026-06-01, session 2)
+Fixed the three reported defects, then ran a quantitative symmetry audit over all 80 glyphs.
+- [x] s: bottom bowl now the EXACT 180deg rotation of the top about the waist (was a 295deg
+  sweep vs the top's 245deg). Lower-left terminal mirrors upper-right. Locked by
+  test_point_symmetry.
+- [x] r: shoulder rebuilt on n's geometry (radius 0.44x, centre offset hs+r_a) so it arcs
+  180deg->25deg off the stem — rounds exactly like n, arm points up-right, no droop.
+- [x] g / j: shared `stem_with_tail` helper (radius 0.42x, half-circle to descender) so the
+  underhangs are IDENTICAL in width and length. Locked by test_g_and_j_underhangs_identical.
+- [x] u: right stem dropped to baseline (asymmetric vs the symmetric U). Now both stems
+  spring cy->x; u is left-right symmetric like U. Locked by test_vertical_axis_symmetry.
+- Audit (symmetry_audit.py) clean: only K TB=0.107 (deliberate 0.48cap junction) and a
+  raster-noise floor of <=0.042 on diagonal/thin glyphs (N s S T *) remain — all expected.
+- Dev tools added: glyph_lab.py (big guided single-glyph render), variant_lab.py
+  (candidate compare), render_chars.py (guided rows), symmetry_audit.py (LR/TB/ROT residuals).
+- 72 tests pass (8 new invariants). Font rebuilt: dist/Cirtemoeg-Sans.{otf,ttf} + proof.
