@@ -225,3 +225,13 @@ Fixed the three reported defects, then ran a quantitative symmetry audit over al
 - After: every letter/digit sits in [0,cap] (Q tail -13 is its intentional baseline cross).
   s is a touch narrower now (bowls shrank to fit height) -- height consistency was the goal.
 - rs_lab.py added. 82 tests pass; font rebuilt. Roscoe specimen: o/s/c/o/e now equal height.
+
+## Digits 1 and 2 cleanup (2026-06-02)
+- 1 "pixelated top": the flag attached at the stem CENTRE (x=xc), so the stem's flat top-left
+  corner poked above the flag's diagonal edge = a little notch. Fixed: flag now springs from
+  the stem's top-LEFT corner (xc-hs) and slants to the tip -> flat stem top stays clean.
+- 2 "weird bottom-left": the diagonal foot was a parallelogram whose inner corner landed at
+  ~(-65,59), poking left of the base bar. Fixed: diagonal is now a constant-width stroke
+  whose foot is buried inside the base bar, so the base bar's own square corner is the clean
+  bottom-left; arc welded to the spine at the terminal (shoulder stays crisp).
+- digit_lab.py added. Both still [0,700]. 82 tests pass; font rebuilt.

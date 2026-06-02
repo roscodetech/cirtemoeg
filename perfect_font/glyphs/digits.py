@@ -16,43 +16,37 @@ def zero(pen, m: Metrics) -> None:
 
 
 def one(pen, m: Metrics) -> None:
-    cap, hs = m.cap_height, m.half_stroke
-    xc = cap * 0.32
+    cap, hs, s = m.cap_height, m.half_stroke, m.stroke
+    xc = cap * 0.34
     vstem(pen, m, xc, 0, cap)                                   # main stem, flat top at cap
-    # flag: a parallelogram. Upper edge from the stem-top-left out to the tip; lower edge
-    # parallel one stroke below. Stays at/under the cap line -> no spike.
-    tipx = xc - cap * 0.22
-    s = m.stroke
+    # flag: a parallelogram attached along the stem's LEFT EDGE (so the stem's flat top
+    # stays clean -- no top-left corner poking above the flag) and slanting down to the tip.
+    tipx = xc - hs - cap * 0.20
     draw_polygon(pen, [
-        (xc, cap),              # A: stem top-left, on the cap line
-        (tipx, cap - s * 0.5),  # B: flag tip (upper)
-        (tipx, cap - s * 1.5),  # C: flag tip (lower)
-        (xc, cap - s),          # D: back on the stem face
+        (xc - hs, cap),          # stem top-left corner (flag springs from here)
+        (tipx, cap - s * 0.7),   # flag tip (upper)
+        (tipx, cap - s * 1.7),   # flag tip (lower)
+        (xc - hs, cap - s),      # back on the stem's left face
     ])
     hbar(pen, m, xc - cap * 0.20, xc + cap * 0.20, hs)          # base serif foot
 
 
 def two(pen, m: Metrics) -> None:
-    cap, hs = m.cap_height, m.half_stroke
+    cap, hs, s = m.cap_height, m.half_stroke, m.stroke
     r = cap * 0.27                                      # arc CENTRELINE radius
     w = cap * 0.58
-    s = m.stroke
     cyy = cap - r - hs                                  # arc OUTER top == cap exactly
     cx = w - r - hs
     a_end = -42                                         # arc terminal angle (the shoulder)
-    # The arc ends in a flat RADIAL cut (outer edge -> inner edge). Make the diagonal's TOP
-    # edge BE that same radial cut, so arc and diagonal share one edge -> the shoulder is a
-    # single CRISP corner with no faceting. The diagonal then runs parallel down to the base.
-    outer = arc_pt(cx, cyy, r + hs, a_end)             # arc terminal: outer edge point
-    inner = arc_pt(cx, cyy, r - hs, a_end)             # arc terminal: inner edge point
-    off = (outer[0] - inner[0], outer[1] - inner[1])   # radial-cut vector (outer - inner)
-    # The diagonal sweeps all the way down to the BOTTOM-LEFT corner: its outer (left) edge
-    # lands on the baseline (y=0) at the left, where the base bar starts and runs right.
-    foot_outer = (0.0, 0.0)                            # bottom-left corner, on the baseline
-    foot_inner = (foot_outer[0] - off[0], foot_outer[1] - off[1])
-    draw_polygon(pen, [outer, foot_outer, foot_inner, inner])
-    carc(pen, m, cx, cyy, r, 195, a_end)               # arc; shares the radial edge -> clean
-    hbar(pen, m, 0, w, hs)                             # base bar LAST, runs right from the foot
+    # Diagonal spine: a constant-width stroke from the arc terminal down into the base bar
+    # (foot buried near the left so the base bar's own square corner is the clean bottom-left).
+    term = arc_pt(cx, cyy, r, a_end)                   # arc CENTRELINE terminal
+    foot = (hs + cap * 0.04, hs)                       # foot sits inside the base bar
+    draw_stroke(pen, term, foot, s)
+    joint(pen, m, *foot)
+    carc(pen, m, cx, cyy, r, 195, a_end, cap1=True)    # arc; welded to the spine at the terminal
+    joint(pen, m, *term)
+    hbar(pen, m, 0, w, hs)                             # base bar -> clean square bottom-left
 
 
 def three(pen, m: Metrics) -> None:
