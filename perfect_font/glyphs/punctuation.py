@@ -138,11 +138,13 @@ def percent(pen, m: Metrics) -> None:
 
 def dollar(pen, m: Metrics) -> None:
     cap, hs = m.cap_height, m.half_stroke
-    r = cap / 4
-    cx = r
+    r = (cap - m.stroke) / 4  # centreline radius so OUTER edges sit on [0, cap] (no overshoot)
+    cx = r + hs
+    top_cy = cap - hs - r
+    bot_cy = hs + r
     # the S body
-    carc(pen, m, cx, cap - r, r, 28, 270, cap1=True)
-    carc(pen, m, cx, r, r, 28 + 180, 270 + 180, cap1=True)
+    carc(pen, m, cx, top_cy, r, 28, 270, cap1=True)
+    carc(pen, m, cx, bot_cy, r, 28 + 180, 270 + 180, cap1=True)
     vstem(pen, m, cx, -cap * 0.12, cap * 1.12)           # vertical bar through
 
 

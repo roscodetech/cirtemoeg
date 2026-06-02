@@ -78,11 +78,12 @@ def f(pen, m: Metrics) -> None:
     r = x * 0.42
     xc = r + hs
     half = x * CROSSBAR_HALF
-    vstem(pen, m, xc, 0, m.cap_height - r)
+    top = m.cap_height - r - hs       # so the hook's OUTER apex sits on the ascender (no overshoot)
+    vstem(pen, m, xc, 0, top)
     # top hook springs from the stem (180 deg), arches over the apex and comes down
     # to terminate up-and-right at 35 deg -- a full hook (matches r's shoulder), not
     # a quarter cut off at the top.
-    carc(pen, m, xc + r, m.cap_height - r, r, 180, 35, cap0=True)
+    carc(pen, m, xc + r, top, r, 180, 35, cap0=True)
     hbar(pen, m, xc - half, xc + half, x - hs)  # crossbar: same width as t, centred on stem
 
 
@@ -172,23 +173,26 @@ def q(pen, m: Metrics) -> None:
 
 def r(pen, m: Metrics) -> None:
     x, hs = m.x_height, m.half_stroke
-    r_a = x * 0.44                       # same shoulder radius as n: rounds identically
-    cy = x - r_a
-    cx = hs + r_a                        # centre offset so the arc springs off the stem
-    vstem(pen, m, hs, 0, x)
-    # shoulder springs from the stem (180 deg), arches over the apex, and the arm
-    # terminates up-and-right at 25 deg -- a rounded shoulder that never tilts down.
-    carc(pen, m, cx, cy, r_a, 180, 25, cap0=True)
+    r_out = x * 0.44                     # outer radius == n's shoulder -> rounds identically
+    r_ctr = r_out - hs                   # carc takes the centreline radius
+    cy = x - r_out                       # apex OUTER edge lands on the x-height line (no overshoot)
+    cx = hs + r_ctr                      # so the 180deg spring sits on the stem centre
+    vstem(pen, m, hs, 0, cy)             # stem to the spring, then the shoulder domes (like n)
+    # shoulder springs from the stem (180 deg), arches over the apex (at x-height) and the
+    # arm terminates up-and-right at 25 deg -- rounds exactly like n, no overshoot.
+    carc(pen, m, cx, cy, r_ctr, 180, 25, cap0=True)
 
 
 def s(pen, m: Metrics) -> None:
-    x = m.x_height
-    r = x / 4  # so the two bowls meet exactly at the waist (x = 4r)
-    cx = r
+    x, hs = m.x_height, m.half_stroke
+    r = (x - m.stroke) / 4  # centreline radius so the OUTER edges sit on [0, x] (no overshoot)
+    cx = r + hs
+    top_cy = x - hs - r     # top bowl outer edge on the x-height line
+    bot_cy = hs + r         # bottom bowl outer edge on the baseline
     # bottom bowl is the exact 180deg rotation of the top about the waist (cx, x/2):
     # equal bowls, and the lower-left terminal mirrors the upper-right one.
-    carc(pen, m, cx, x - r, r, 25, 270, cap1=True)  # top bowl: terminal(25) -> waist(270)
-    carc(pen, m, cx, r, r, 90, -155)                # bottom bowl: waist(90) -> terminal(-155)
+    carc(pen, m, cx, top_cy, r, 25, 270, cap1=True)  # top bowl: terminal(25) -> waist(270)
+    carc(pen, m, cx, bot_cy, r, 90, -155)            # bottom bowl: waist(90) -> terminal(-155)
 
 
 def t(pen, m: Metrics) -> None:
@@ -196,11 +200,12 @@ def t(pen, m: Metrics) -> None:
     r_a = x * 0.34
     xc = x * 0.34
     half = x * CROSSBAR_HALF
-    vstem(pen, m, xc, r_a, x * 1.42)
+    foot = r_a + hs                  # so the foot's OUTER bottom sits on the baseline (no overshoot)
+    vstem(pen, m, xc, foot, x * 1.42)
     hbar(pen, m, xc - half, xc + half, x - hs)  # crossbar: same width as f, centred on stem
     # foot springs from the stem base (180 deg), curls under and up to terminate
     # up-and-right at 340 deg -- a full J-foot, not a quarter cut off at the baseline.
-    carc(pen, m, xc + r_a, r_a, r_a, 180, 340, cap0=True)
+    carc(pen, m, xc + r_a, foot, r_a, 180, 340, cap0=True)
 
 
 def u(pen, m: Metrics) -> None:

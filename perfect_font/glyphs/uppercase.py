@@ -104,21 +104,22 @@ def J(pen, m: Metrics) -> None:
     cap, hs = m.cap_height, m.half_stroke
     r = cap * 0.34            # bigger hook so J fills the cap like other letters
     xc = cap * 0.46           # stem x: hook centre sits left of it
-    vstem(pen, m, xc, r, cap)
+    foot = r + hs             # hook OUTER bottom on the baseline (no overshoot)
+    vstem(pen, m, xc, foot, cap)
     # bottom hook curving left: centerline arc from the stem foot down and round to the left
-    carc(pen, m, xc - r, r, r, 0, -180, cap0=True)
+    carc(pen, m, xc - r, foot, r, 0, -180, cap0=True)
 
 
 def K(pen, m: Metrics) -> None:
     cap, hs = m.cap_height, m.half_stroke
     w = cap * 0.62
     vstem(pen, m, hs, 0, cap)
-    # arms meet at one junction on the stem; perpendicular strokes keep constant weight
-    # (free-standing tips, so no flush-cut needed and no shallow-angle ballooning)
-    junc = (hs, cap * 0.48)
-    draw_stroke(pen, junc, (w, cap), m.stroke)
-    draw_stroke(pen, junc, (w, 0), m.stroke)
-    joint(pen, m, *junc)
+    # arms meet at a junction inside the stem; diag gives horizontal flush cuts so the tips
+    # land exactly on the cap line / baseline (no perpendicular-cap spike past them). The
+    # junction sits near the stem's right edge so the wide diagonal cuts stay within the stem.
+    junc = (m.stroke * 0.72, cap * 0.48)
+    diag(pen, m, junc, (w, cap))
+    diag(pen, m, junc, (w, 0))
     joint(pen, m, *junc)
 
 
@@ -175,12 +176,14 @@ def R(pen, m: Metrics) -> None:
 
 
 def S(pen, m: Metrics) -> None:
-    cap = m.cap_height
-    r = cap / 4  # two bowls meet exactly at the waist (cap = 4r)
-    cx = r
+    cap, hs = m.cap_height, m.half_stroke
+    r = (cap - m.stroke) / 4  # centreline radius so OUTER edges sit on [0, cap] (no overshoot)
+    cx = r + hs
+    top_cy = cap - hs - r
+    bot_cy = hs + r
     # bottom bowl is the top bowl rotated 180 deg about the centre -> exact point symmetry
-    carc(pen, m, cx, cap - r, r, 28, 270, cap1=True)   # top bowl -> waist
-    carc(pen, m, cx, r, r, 28 + 180, 270 + 180, cap1=True)  # waist -> bottom bowl
+    carc(pen, m, cx, top_cy, r, 28, 270, cap1=True)         # top bowl -> waist
+    carc(pen, m, cx, bot_cy, r, 28 + 180, 270 + 180, cap1=True)  # waist -> bottom bowl
 
 
 def T(pen, m: Metrics) -> None:

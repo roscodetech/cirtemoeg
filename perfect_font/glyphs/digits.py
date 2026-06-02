@@ -56,11 +56,13 @@ def two(pen, m: Metrics) -> None:
 
 
 def three(pen, m: Metrics) -> None:
-    cap = m.cap_height
-    r = cap / 4  # both bowls share a radius and meet at the waist
-    cx = r
-    carc(pen, m, cx, cap - r, r, 150, -90, cap1=True)  # upper bowl -> waist
-    carc(pen, m, cx, r, r, 90, -150)                   # waist -> lower bowl
+    cap, hs = m.cap_height, m.half_stroke
+    r = (cap - m.stroke) / 4  # centreline radius so OUTER edges sit on [0, cap] (no overshoot)
+    cx = r + hs
+    top_cy = cap - hs - r
+    bot_cy = hs + r
+    carc(pen, m, cx, top_cy, r, 150, -90, cap1=True)  # upper bowl -> waist
+    carc(pen, m, cx, bot_cy, r, 90, -150)             # waist -> lower bowl
 
 
 def four(pen, m: Metrics) -> None:
@@ -98,12 +100,13 @@ def five(pen, m: Metrics) -> None:
     r = cap * 0.30
     cx = r
     stem_foot = cap * 0.52
+    bowl_cy = r + hs                         # bowl OUTER bottom on the baseline (no overshoot)
     vstem(pen, m, hs, stem_foot, cap)        # upper-left stem (flat top at cap)
     hbar(pen, m, hs, w, cap - hs)            # top bar (sits at cap-hs, no spike)
     joint(pen, m, hs, cap - hs)
     # lower bowl: an arc bulging right. Start at the stem foot (overlap) and sweep down
     # round the bottom and up to the lower-left aperture.
-    carc(pen, m, cx, r, r, 135, -150, cap0=True, cap1=True)
+    carc(pen, m, cx, bowl_cy, r, 135, -150, cap0=True, cap1=True)
     joint(pen, m, hs, stem_foot)
 
 
@@ -116,7 +119,7 @@ def six(pen, m: Metrics) -> None:
     # spine = the bowl's left wall continued straight up, then a top hook curving right.
     x_left = hs                     # left wall centreline
     hook_r = rb * 0.92              # top hook radius
-    hook_cy = cap - hook_r
+    hook_cy = cap - hook_r - hs     # hook OUTER apex on the cap line (no overshoot)
     vstem(pen, m, x_left, bowl_cy, hook_cy)             # near-vertical left stem
     carc(pen, m, x_left + hook_r, hook_cy, hook_r, 180, 20, cap0=True, cap1=True)  # top hook
     joint(pen, m, x_left, bowl_cy)
@@ -134,11 +137,10 @@ def eight(pen, m: Metrics) -> None:
     cap = m.cap_height
     r_top, r_bot = cap * 0.235, cap * 0.30
     cx = r_bot
-    # place centres so the rings OVERLAP at the waist (centre gap < r_top + r_bot - stroke),
-    # otherwise tangent circles leave a hairline gap and read as disconnected.
-    waist = cap * 0.52
-    ring(pen, m, cx, waist + r_top - m.stroke * 0.4, r_top)   # upper ring, dropped down
-    ring(pen, m, cx, waist - r_bot + m.stroke * 0.4, r_bot)   # lower ring, raised up
+    # rings sit on the metric lines (top edge at cap, bottom edge at baseline) and overlap
+    # at the waist (top ring bottom = cap-2*r_top, below bottom ring top = 2*r_bot).
+    ring(pen, m, cx, cap - r_top, r_top)   # upper ring: top edge on the cap line
+    ring(pen, m, cx, r_bot, r_bot)         # lower ring: bottom edge on the baseline
 
 
 def nine(pen, m: Metrics) -> None:
@@ -150,7 +152,7 @@ def nine(pen, m: Metrics) -> None:
     ring(pen, m, cx, bowl_cy, rb)         # bowl at the top
     x_right = 2 * rb - hs                  # right wall centreline
     hook_r = rb * 0.92
-    hook_cy = hook_r
+    hook_cy = hook_r + hs                  # hook OUTER bottom on the baseline (no overshoot)
     vstem(pen, m, x_right, hook_cy, bowl_cy)            # near-vertical right stem
     carc(pen, m, x_right - hook_r, hook_cy, hook_r, 0, -160, cap0=True, cap1=True)  # foot hook
     joint(pen, m, x_right, bowl_cy)

@@ -199,3 +199,29 @@ Fixed the three reported defects, then ran a quantitative symmetry audit over al
   - h unchanged: passes the ascender to _arch_glyph (tall stem carries the shoulder, no poke).
   - n and m added to test_vertical_axis_symmetry. nuft_lab.py added as the comparison harness.
 - 75 tests pass; font rebuilt.
+
+## Circle/bowl consistency verification (2026-06-02)
+- Q: are a,b,d,g,o,p,q the same circle? is c = o minus a break? is d = a + longer stem?
+- ANSWER: yes to all, already true by construction (all call _bowl: ring r=x_height/2 centred
+  at (175,175); c uses the same centre+radius, arc 55..305 leaving a 110deg right break).
+- Verified by true rasterised ink: bowls all 349w x 350 top x 0 bottom; c reaches the same
+  top(351)/bottom(0) but 274 wide (the break); a & d identical below x-height, d's stem to
+  ascender. Overlays in dist/lab/circle_*.png (all bowls coincide into one ring).
+- Locked with test_bowls_share_one_circle (o,a,b,d,p,q) + test_a_and_d_share_bowl. circle_check.py
+  added as the overlay harness. 82 tests pass. No glyph changes needed.
+
+## Height consistency: kill the half-stroke overshoot (2026-06-02)
+- Q: lowercase letters weren't all the same height (s/c, etc.). Measured rasterised ink:
+  most x-height letters topped at 350, but s=395/-44 and r=394 overshot. Root cause: carc
+  curves use the CENTRELINE radius then add hs for the outer edge, so any curve whose extremum
+  is meant to touch a metric line landed hs (=44u, 12.6%!) PAST it -- unlike o, which uses
+  band_radius and sits exactly on the lines.
+- Fixed every affected glyph so the OUTER edge sits on the line (offset centre by hs):
+  - lowercase: s (bowls -> [0,x]), r (apex -> x), f (hook -> ascender), t (foot -> baseline).
+  - uppercase: S + $ (bowls -> [0,cap]), J (hook -> baseline), K (arms -> diag flush cuts at
+    cap/baseline instead of perpendicular-cap spikes; junction nudged to stem to avoid poke).
+  - digits: 3,5,6,9 (bowls/hooks -> lines); 8 rebuilt so its rings sit on cap/baseline (was
+    SHORT at 658) and still overlap at the waist.
+- After: every letter/digit sits in [0,cap] (Q tail -13 is its intentional baseline cross).
+  s is a touch narrower now (bowls shrank to fit height) -- height consistency was the goal.
+- rs_lab.py added. 82 tests pass; font rebuilt. Roscoe specimen: o/s/c/o/e now equal height.

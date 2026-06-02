@@ -67,6 +67,25 @@ def test_o_outer_box_is_square(m):
     assert abs((xmax - xmin) - (ymax - ymin)) < TOL
 
 
+@pytest.mark.parametrize("name", ["o", "a", "b", "d", "p", "q"])
+def test_bowls_share_one_circle(name, m):
+    """a, b, d, o, p, q all draw the same bowl (diameter == x_height, sitting in the
+    baseline..x-height band). Stems/extensions add height but never change the bowl."""
+    xmin, _ymin, xmax, ymax = _bounds(name, m)
+    assert abs(xmin - 0) < TOL, f"{name} bowl left off 0"
+    assert abs(xmax - m.x_height) < TOL, f"{name} bowl width != x_height"
+    assert ymax >= m.x_height - TOL, f"{name} bowl top below x-height"
+
+
+def test_a_and_d_share_bowl(m):
+    """d is an 'a' with the right stem extended to the ascender: identical bowl."""
+    ax0, ay0, ax1, ay1 = _bounds("a", m)
+    dx0, dy0, dx1, dy1 = _bounds("d", m)
+    assert abs(ax0 - dx0) < TOL and abs(ay0 - dy0) < TOL and abs(ax1 - dx1) < TOL
+    assert abs(ay1 - m.x_height) < TOL, "a should rise to x-height"
+    assert abs(dy1 - m.ascender) < TOL, "d should rise to the ascender"
+
+
 @pytest.mark.parametrize("name", ["b", "d", "h", "k", "l", "O", "H", "I", "A"])
 def test_ascenders_and_caps_reach_cap_height(name, m):
     _, _, _, ymax = _bounds(name, m)
