@@ -20,12 +20,17 @@ from perfect_font.glyphs.parts import (
     vstem,
 )
 
-# Descender-tail curl radius (x-height fraction). Shared by g and j so their
-# underhangs are identical -- see ``stem_with_tail``.
-TAIL_RADIUS = 0.42
 from perfect_font.glyphs.strokes import draw_chevron
 from perfect_font.metrics import Metrics
 from perfect_font.pens import draw_disc, draw_stroke
+
+# Descender-tail curl radius (x-height fraction). Shared by g and j so their
+# underhangs are identical -- see ``stem_with_tail``.
+TAIL_RADIUS = 0.42
+
+# Half-width of the f/t crossbar (x-height fraction). Shared so both crossbars are the
+# same length and sit symmetrically about their stems.
+CROSSBAR_HALF = 0.34
 
 
 def _bowl(pen, m: Metrics):
@@ -72,12 +77,13 @@ def f(pen, m: Metrics) -> None:
     x, hs = m.x_height, m.half_stroke
     r = x * 0.42
     xc = r + hs
+    half = x * CROSSBAR_HALF
     vstem(pen, m, xc, 0, m.cap_height - r)
     # top hook springs from the stem (180 deg), arches over the apex and comes down
     # to terminate up-and-right at 35 deg -- a full hook (matches r's shoulder), not
     # a quarter cut off at the top.
     carc(pen, m, xc + r, m.cap_height - r, r, 180, 35, cap0=True)
-    hbar(pen, m, 0, xc + r, x - hs)
+    hbar(pen, m, xc - half, xc + half, x - hs)  # crossbar: same width as t, centred on stem
 
 
 def g(pen, m: Metrics) -> None:
@@ -86,12 +92,15 @@ def g(pen, m: Metrics) -> None:
     stem_with_tail(pen, m, xc, m.x_height * TAIL_RADIUS, m.x_height)  # tail identical to j
 
 
-def _arch_glyph(pen, m: Metrics, left_full_to: float) -> float:
+def _arch_glyph(pen, m: Metrics, left_top: float | None = None) -> float:
     x, hs = m.x_height, m.half_stroke
     w = x * 0.88
     r_a = w / 2
     cy = x - r_a
-    vstem(pen, m, hs, 0, left_full_to)
+    # The left stem rises to `left_top`; when None it stops at the arch spring (cy) so the
+    # shoulder domes cleanly off it with no poke -- making n an exact vertical mirror of u.
+    # h passes the ascender: its tall stem carries the shoulder on its side (no poke either).
+    vstem(pen, m, hs, 0, cy if left_top is None else left_top)
     half_top(pen, m, w / 2, cy, r_a)
     vstem(pen, m, w - hs, 0, cy)
     return w
@@ -136,7 +145,7 @@ def m(pen, mm: Metrics) -> None:
     s0 = hs                    # left stem
     s1 = s0 + span             # middle stem
     s2 = s1 + span             # right stem
-    vstem(pen, mm, s0, 0, x)               # only the left stem rises to x-height
+    vstem(pen, mm, s0, 0, cy)              # all stems stop at the arch spring (clean domes)
     half_top(pen, mm, (s0 + s1) / 2, cy, r_a)   # left shoulder centred on the counter
     vstem(pen, mm, s1, 0, cy)              # inner stems stop at the arch spring
     half_top(pen, mm, (s1 + s2) / 2, cy, r_a)   # right shoulder
@@ -144,7 +153,7 @@ def m(pen, mm: Metrics) -> None:
 
 
 def n(pen, m: Metrics) -> None:
-    _arch_glyph(pen, m, m.x_height)
+    _arch_glyph(pen, m)  # symmetric arch: a clean dome, exact mirror of u (no left notch)
 
 
 def o(pen, m: Metrics) -> None:
@@ -186,8 +195,9 @@ def t(pen, m: Metrics) -> None:
     x, hs = m.x_height, m.half_stroke
     r_a = x * 0.34
     xc = x * 0.34
+    half = x * CROSSBAR_HALF
     vstem(pen, m, xc, r_a, x * 1.42)
-    hbar(pen, m, 0, xc + r_a, x - hs)
+    hbar(pen, m, xc - half, xc + half, x - hs)  # crossbar: same width as f, centred on stem
     # foot springs from the stem base (180 deg), curls under and up to terminate
     # up-and-right at 340 deg -- a full J-foot, not a quarter cut off at the baseline.
     carc(pen, m, xc + r_a, r_a, r_a, 180, 340, cap0=True)

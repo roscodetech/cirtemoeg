@@ -88,7 +88,8 @@ def test_stem_width_equals_stroke(m):
 
 
 @pytest.mark.parametrize(
-    "name", ["o", "O", "A", "H", "T", "V", "X", "x", "v", "M", "W", "I", "eight", "u", "U"]
+    "name", ["o", "O", "A", "H", "T", "V", "X", "x", "v", "M", "W", "I", "eight",
+             "u", "U", "n", "m"]
 )
 def test_vertical_axis_symmetry(name, m):
     pts = _points(name, m)
@@ -123,6 +124,14 @@ def _below_baseline_box(name: str, m: Metrics):
     below = [p for p in _points(name, m) if p[1] < -TOL]
     xs, ys = [p[0] for p in below], [p[1] for p in below]
     return max(xs) - min(xs), min(ys), max(ys) - min(ys)
+
+
+def test_f_and_t_crossbars_match(m):
+    """f and t share one crossbar width (both centred on their stems)."""
+    def crossbar_width(name: str) -> float:
+        xs = [x for x, y in _points(name, m) if abs(y - m.x_height) < 1.0]
+        return max(xs) - min(xs)
+    assert abs(crossbar_width("f") - crossbar_width("t")) < TOL
 
 
 def test_g_and_j_underhangs_identical(m):

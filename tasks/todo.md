@@ -186,3 +186,16 @@ Fixed the three reported defects, then ran a quantitative symmetry audit over al
   bottom gap; tail is a short draw_stroke flick out to a ball terminal (clean cap, no blunt
   arrowhead), kept clear of the inner a. R=0.43cap.
 - at_lab.py added as the @ iteration harness. 72 tests pass; font rebuilt.
+
+## f/t crossbars + n/u consistency (2026-06-02)
+- Q1: were f and t crossbars the same width? NO -- f was 338u (off-centre: 191 left/147 right),
+  t was 238u (centred). Now both use CROSSBAR_HALF=0.34x, symmetric about their stems -> both
+  238u, identical. Locked by test_f_and_t_crossbars_match.
+- Q2: n had a left notch, u did not -- why/which is better? n's left stem ran full height (0->x)
+  beside a symmetric arch, so the stem top poked ~15u above the shoulder = the notch. u was the
+  clean symmetric form. Symmetric is better (consistent, fully geometric), so:
+  - n now uses a symmetric arch (both stems 0->cy) -> a clean dome, exact vertical mirror of u.
+  - m likewise: left stem now stops at cy (was 0->x), so all three domes are clean/consistent.
+  - h unchanged: passes the ascender to _arch_glyph (tall stem carries the shoulder, no poke).
+  - n and m added to test_vertical_axis_symmetry. nuft_lab.py added as the comparison harness.
+- 75 tests pass; font rebuilt.
